@@ -2,23 +2,31 @@ const express = require('express');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
+const { getSecret } = require('./config/secrets');
 
 dotenv.config();
 
-// Initialize Express
-const app = express();
+(async () => {
 
-// Body parser middleware
-app.use(express.json());
+    // Retrieve secrets and set them as global environment variables
+    await getSecret();
 
-// Connect to MongoDB
-connectDB();
+    // Initialize Express
+    const app = express();
 
-// Use routes
-app.use('/api/auth', authRoutes);
+    // Body parser middleware
+    app.use(express.json());
 
-// Start the server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+    // Connect to MongoDB
+    connectDB();
+
+    // Use routes
+    app.use('/api/auth', authRoutes);
+
+    // Start the server
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
+
+})();
